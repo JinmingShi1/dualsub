@@ -1,0 +1,306 @@
+/* Hide the site's own captions while ours are showing. */
+.dualsub-active #movie_player .ytp-caption-window-container,
+.dualsub-active .rcplayer-container .rc-cues-container {
+  display: none !important;
+}
+
+#dualsub-overlay {
+  position: absolute;
+  left: 50%;
+  bottom: 7%;
+  transform: translateX(-50%);
+  z-index: 40;
+  box-sizing: border-box;
+  width: max-content;
+  max-width: 90%;
+  padding: 0.45em 0.9em 0.5em;
+  border-radius: 0.45em;
+  background: rgba(18, 18, 20, 0.72);
+  -webkit-backdrop-filter: blur(10px) saturate(140%);
+  backdrop-filter: blur(10px) saturate(140%);
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 0.15em;
+  font-size: var(--ds-size, 22px);
+  font-family: -apple-system, BlinkMacSystemFont, "SF Pro Display", Inter, "PingFang SC",
+    "Hiragino Sans GB", "Microsoft YaHei", sans-serif;
+  -webkit-font-smoothing: antialiased;
+  text-align: center;
+  pointer-events: none;
+  transition: bottom 0.2s ease;
+}
+
+/* Lift above the control bar while it's visible (toggled by content.js). */
+#dualsub-overlay.ds-lift {
+  bottom: max(7%, 72px);
+}
+
+#dualsub-overlay[hidden],
+#dualsub-overlay .ds-line[hidden] {
+  display: none !important;
+}
+
+#dualsub-overlay .ds-line {
+  line-height: 1.3;
+  letter-spacing: 0.005em;
+  white-space: pre-wrap;
+  text-shadow: 0 1px 3px rgba(0, 0, 0, 0.55);
+}
+
+/* Original: words not yet spoken are dimmed, spoken ones turn white. */
+#dualsub-overlay .ds-orig {
+  font-size: 0.95em;
+  font-weight: 500;
+}
+
+#dualsub-overlay .ds-orig span {
+  color: rgba(255, 255, 255, 0.42);
+  transition: color 0.18s ease-out;
+}
+
+#dualsub-overlay .ds-orig span.ds-spoken {
+  color: #fff;
+}
+
+#dualsub-overlay .ds-tr {
+  color: #fff;
+  font-size: 1em;
+  font-weight: 600;
+}
+
+#dualsub-overlay .ds-tr.ds-pending {
+  color: rgba(255, 255, 255, 0.5);
+  font-weight: 400;
+  font-size: 0.75em;
+}
+
+/* ---------- word lookup ---------- */
+
+#dualsub-overlay .ds-word {
+  pointer-events: auto;
+  cursor: pointer;
+  border-radius: 0.15em;
+}
+
+#dualsub-overlay .ds-word:hover,
+#dualsub-panel .ds-word:hover {
+  background: rgba(255, 255, 255, 0.18);
+  color: #fff;
+}
+
+#dualsub-tip {
+  position: fixed;
+  z-index: 2147483647;
+  box-sizing: border-box;
+  max-width: 320px;
+  min-width: 180px;
+  padding: 10px 12px;
+  border-radius: 10px;
+  background: rgba(28, 28, 32, 0.96);
+  -webkit-backdrop-filter: blur(12px);
+  backdrop-filter: blur(12px);
+  box-shadow: 0 8px 28px rgba(0, 0, 0, 0.45);
+  color: #f2f2f2;
+  font: 14px/1.45 -apple-system, BlinkMacSystemFont, "SF Pro Text", Inter, "PingFang SC", sans-serif;
+  text-align: left;
+}
+
+#dualsub-tip[hidden] { display: none !important; }
+
+#dualsub-tip .ds-tip-head {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 8px;
+  margin-bottom: 4px;
+}
+
+#dualsub-tip .ds-tip-word { font-size: 17px; font-weight: 600; color: #fff; }
+
+#dualsub-tip .ds-tip-say {
+  all: unset;
+  cursor: pointer;
+  font-size: 14px;
+  opacity: 0.7;
+}
+#dualsub-tip .ds-tip-say:hover { opacity: 1; }
+
+#dualsub-tip .ds-tip-main { font-size: 16px; font-weight: 600; color: #fff; }
+
+#dualsub-tip .ds-tip-pos {
+  display: inline-block;
+  margin-right: 6px;
+  padding: 0 5px;
+  border-radius: 4px;
+  background: rgba(255, 216, 77, 0.18);
+  color: #ffd84d;
+  font-size: 12px;
+  line-height: 18px;
+  vertical-align: 1px;
+}
+
+#dualsub-tip .ds-tip-alt { margin-top: 6px; color: #9a9a9a; font-size: 12.5px; }
+
+#dualsub-tip .ds-tip-def {
+  margin-top: 5px;
+  color: #d6d6d6;
+  font-size: 13px;
+}
+#dualsub-tip .ds-tip-main + .ds-tip-def {
+  margin-top: 7px;
+  padding-top: 7px;
+  border-top: 1px solid rgba(255, 255, 255, 0.08);
+}
+
+#dualsub-tip .ds-tip-muted { color: #9a9a9a; font-size: 13px; }
+
+/* ---------- transcript panel ---------- */
+
+#dualsub-tab {
+  all: unset;
+  position: fixed;
+  right: 0;
+  top: 50%;
+  transform: translateY(-50%);
+  z-index: 2147483000;
+  padding: 12px 7px;
+  border-radius: 8px 0 0 8px;
+  background: rgba(28, 28, 32, 0.88);
+  box-shadow: -2px 2px 12px rgba(0, 0, 0, 0.3);
+  color: #fff;
+  font: 600 13px/1.2 -apple-system, BlinkMacSystemFont, "PingFang SC", sans-serif;
+  letter-spacing: 0.15em;
+  writing-mode: vertical-rl;
+  cursor: pointer;
+}
+#dualsub-tab:hover { background: rgba(48, 48, 54, 0.95); }
+#dualsub-tab[hidden] { display: none !important; }
+
+/* Room for the panel: shrink the page (YouTube) or the player dialog (TOU.TV). */
+html.ds-room ytd-app {
+  margin-right: var(--ds-panel-w) !important;
+}
+html.ds-room #masthead-container {
+  width: calc(100% - var(--ds-panel-w)) !important;
+}
+html.ds-room dialog:has(.rcplayer-container) {
+  inset: 0 auto 0 0 !important;
+  width: calc(100vw - var(--ds-panel-w)) !important;
+  max-width: none !important;
+  margin: 0 !important;
+}
+
+#dualsub-panel {
+  position: fixed;
+  top: 0;
+  right: 0;
+  bottom: 0;
+  z-index: 2147483000;
+  box-sizing: border-box;
+  width: var(--ds-panel-w, 400px);
+  border-left: 1px solid rgba(255, 255, 255, 0.06);
+  display: flex;
+  flex-direction: column;
+  background: rgba(22, 22, 26, 0.95);
+  -webkit-backdrop-filter: blur(14px);
+  backdrop-filter: blur(14px);
+  color: #eee;
+  font: 14px/1.5 -apple-system, BlinkMacSystemFont, "SF Pro Text", Inter, "PingFang SC", sans-serif;
+  text-align: left;
+}
+#dualsub-panel[hidden] { display: none !important; }
+
+#dualsub-panel button { font: inherit; }
+
+#dualsub-panel .ds-panel-head {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  padding: 14px 14px 12px 18px;
+  border-bottom: 1px solid rgba(255, 255, 255, 0.08);
+}
+
+#dualsub-panel .ds-panel-title { font-size: 16px; font-weight: 600; color: #fff; }
+#dualsub-panel .ds-panel-status { flex: 1; color: #8d8d8d; font-size: 12px; }
+
+#dualsub-panel .ds-panel-btn {
+  padding: 4px 10px;
+  border: 1px solid rgba(255, 216, 77, 0.5);
+  border-radius: 6px;
+  background: transparent;
+  color: #ffd84d;
+  font-size: 12.5px;
+  cursor: pointer;
+}
+#dualsub-panel .ds-panel-btn:hover:not(:disabled) { background: rgba(255, 216, 77, 0.12); }
+#dualsub-panel .ds-panel-btn:disabled { opacity: 0.35; cursor: default; }
+#dualsub-panel .ds-panel-btn[hidden] { display: none; }
+
+#dualsub-panel .ds-panel-close {
+  width: 28px;
+  height: 28px;
+  border: 0;
+  border-radius: 6px;
+  background: transparent;
+  color: #aaa;
+  font-size: 20px;
+  line-height: 1;
+  cursor: pointer;
+}
+#dualsub-panel .ds-panel-close:hover { background: rgba(255, 255, 255, 0.08); color: #fff; }
+
+#dualsub-panel .ds-panel-list {
+  position: relative;
+  flex: 1;
+  overflow-y: auto;
+  padding: 6px 0 40vh;
+  overscroll-behavior: contain;
+}
+
+#dualsub-panel .ds-panel-empty { padding: 24px 18px; color: #8d8d8d; }
+
+#dualsub-panel .ds-row {
+  display: flex;
+  gap: 12px;
+  padding: 8px 16px 8px 14px;
+  border-left: 3px solid transparent;
+  cursor: pointer;
+  transition: background-color 0.35s ease, border-color 0.35s ease;
+}
+#dualsub-panel .ds-row:hover { background: rgba(255, 255, 255, 0.04); }
+
+#dualsub-panel .ds-row-active {
+  border-left-color: #ffd84d;
+  background: rgba(255, 255, 255, 0.07);
+}
+
+#dualsub-panel .ds-row-time {
+  flex: none;
+  transition: color 0.35s ease;
+  width: 44px;
+  padding-top: 1px;
+  color: #7d7d7d;
+  font-size: 12px;
+  font-variant-numeric: tabular-nums;
+}
+#dualsub-panel .ds-row-active .ds-row-time { color: #ffd84d; }
+
+#dualsub-panel .ds-row-body { flex: 1; min-width: 0; }
+#dualsub-panel .ds-row-orig { color: #bdbdbd; transition: color 0.35s ease; }
+#dualsub-panel .ds-row-active .ds-row-orig { color: #fff; }
+#dualsub-panel .ds-row-tr { margin-top: 2px; color: #a8a8a8; font-size: 13.5px; }
+#dualsub-panel .ds-row-active .ds-row-tr { color: #d8d8d8; }
+#dualsub-panel .ds-row-muted { color: #6f6f6f; font-size: 12px; }
+
+#dualsub-panel .ds-row-trbtn {
+  padding: 0 6px;
+  border: 0;
+  border-radius: 4px;
+  background: rgba(255, 255, 255, 0.06);
+  color: #8d8d8d;
+  font-size: 12px;
+  line-height: 20px;
+  cursor: pointer;
+}
+#dualsub-panel .ds-row-trbtn:hover { background: rgba(255, 216, 77, 0.15); color: #ffd84d; }

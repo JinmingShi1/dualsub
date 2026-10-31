@@ -1,0 +1,23 @@
+{
+  "manifest_version": 3,
+  "name": "DualSub",
+  "version": "0.1.0",
+  "description": "Bilingual subtitles for YouTube and ICI TOU.TV, translated by Google Translate.",
+  "permissions": ["storage", "unlimitedStorage", "scripting"],
+  "host_permissions": [
+    "https://www.youtube.com/*",
+    "https://ici.tou.tv/*",
+    "https://translate.googleapis.com/*",
+    "https://en.wiktionary.org/*"
+  ],
+  "background": { "service_worker": "background.js" },
+  "action": { "default_popup": "popup.html", "default_title": "DualSub" },
+  "content_scripts": [
+    {
+      "matches": ["https://www.youtube.com/*", "https://ici.tou.tv/*"],
+      "js": ["shared.js", "captions.js", "content.js", "lookup.js", "transcript.js"],
+      "css": ["content.css"],
+      "run_at": "document_start"
+    }
+  ]
+}
