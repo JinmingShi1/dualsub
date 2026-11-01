@@ -1,5 +1,4 @@
 // Shared constants. Loaded by the content script, popup and background worker.
-
 self.DUALSUB_DEFAULTS = {
   enabled: true,
   targetLang: 'zh-Hans',
